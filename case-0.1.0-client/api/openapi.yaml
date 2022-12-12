@@ -1,0 +1,158 @@
+openapi: 3.0.0
+info:
+  contact:
+    email: someone@airfranceklm.com
+    name: someone
+    url: https://developer.airfranceklm.com/
+  description: You can use this api to retrieve locations.
+  title: Travel API
+  version: 1.0.0
+servers:
+- url: http://localhost:8080/travel
+tags:
+- description: Travel api for retrieving locations
+  name: location
+paths:
+  /locations:
+    get:
+      description: Get all locations
+      operationId: getLocations
+      parameters:
+      - description: The accept language header should be used to internationalize
+          the response. If not specified or the requested language is not supported,
+          english should be returned. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Language
+          for further details.
+        explode: false
+        in: header
+        name: accept-language
+        required: false
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Location'
+                type: array
+          description: OK
+      tags:
+      - locations
+      x-accepts: application/json
+  /locations/{type}/{code}:
+    get:
+      description: Get location by type and code
+      operationId: getLocationByTypeAndCode
+      parameters:
+      - description: The type of the location
+        explode: false
+        in: path
+        name: type
+        required: true
+        schema:
+          $ref: '#/components/schemas/LocationType'
+        style: simple
+      - description: The ISO code of the required airport
+        explode: false
+        in: path
+        name: code
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: The accept language header should be used to internationalize
+          the response. If not specified or the requested language is not supported,
+          english should be returned. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Language
+          for further details.
+        explode: false
+        in: header
+        name: accept-language
+        required: false
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+          description: OK
+        "404":
+          description: NOTFOUND
+      tags:
+      - locations
+      x-accepts: application/json
+components:
+  parameters:
+    accept-language:
+      description: The accept language header should be used to internationalize the
+        response. If not specified or the requested language is not supported, english
+        should be returned. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Language
+        for further details.
+      explode: false
+      in: header
+      name: accept-language
+      required: false
+      schema:
+        type: string
+      style: simple
+  responses:
+    Location:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Location'
+      description: OK
+    Locations:
+      content:
+        application/json:
+          schema:
+            items:
+              $ref: '#/components/schemas/Location'
+            type: array
+      description: OK
+    "404":
+      description: NOTFOUND
+  schemas:
+    Location:
+      example:
+        code: code
+        parentCode: parentCode
+        latitude: 0.8008281904610115
+        name: name
+        description: description
+        longitude: 6.027456183070403
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/LocationType'
+        latitude:
+          format: double
+          type: number
+        longitude:
+          format: double
+          type: number
+        description:
+          type: string
+        parentCode:
+          type: string
+        parentType:
+          $ref: '#/components/schemas/LocationType'
+      type: object
+    LocationType:
+      enum:
+      - country
+      - city
+      - airport
+      type: string
+  securitySchemes:
+    BasicAuth:
+      scheme: basic
+      type: http
+
